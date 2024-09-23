@@ -10,11 +10,9 @@ import {
 } from './schema'
 import dayjs from 'dayjs'
 
-// ID fixo para a categoria "uncategorized"
 const UNCATEGORIZED_ID = 'uncategorized-id'
 
 async function seed() {
-  // Limpar as tabelas
   await db.delete(goalCompletions)
   await db.delete(goals)
   await db.delete(categories)
@@ -23,7 +21,6 @@ async function seed() {
   await db.delete(teams)
   await db.delete(users)
 
-  // Inserir usuários
   const insertedUsers = await db
     .insert(users)
     .values([
@@ -42,7 +39,6 @@ async function seed() {
     ])
     .returning()
 
-  // Inserir categorias (incluindo a categoria UNCATEGORIZED)
   const insertedCategories = await db
     .insert(categories)
     .values([
@@ -59,52 +55,49 @@ async function seed() {
     ])
     .returning()
 
-  // Inserir metas (goals)
   const insertedGoals = await db
     .insert(goals)
     .values([
       {
         title: 'Acordar cedo',
         desiredWeeklyFrequency: 5,
-        categoryId: insertedCategories[0].id, // Categoria Health
+        categoryId: insertedCategories[0].id,
         ownersId: insertedUsers[0].id,
         type: 'Monthly',
       },
       {
         title: 'Exercícios',
         desiredWeeklyFrequency: 3,
-        categoryId: insertedCategories[0].id, // Categoria Health
+        categoryId: insertedCategories[0].id,
         ownersId: insertedUsers[1].id,
         type: 'Weekly',
       },
       {
         title: 'Meditar',
         desiredWeeklyFrequency: 2,
-        categoryId: insertedCategories[2].id, // Categoria Uncategorized
+        categoryId: insertedCategories[2].id,
         ownersId: insertedUsers[0].id,
         type: 'Daily',
       },
     ])
     .returning()
 
-  // Inserir completions para as metas
   const startOfWeek = dayjs().startOf('week')
 
   await db.insert(goalCompletions).values([
     {
       goalId: insertedGoals[0].id,
-      userId: insertedUsers[0].id, // Usuário John Doe completou
+      userId: insertedUsers[0].id,
       createdAt: startOfWeek.toDate(),
     },
     {
       goalId: insertedGoals[1].id,
-      userId: insertedUsers[1].id, // Usuário Jane Smith completou
+      userId: insertedUsers[1].id,
       createdAt: startOfWeek.add(1, 'day').toDate(),
     },
   ])
 }
 
-// Executa a função de seed e encerra o cliente
 seed().finally(() => {
   client.end()
 })

@@ -7,7 +7,6 @@ export async function getWeekSummaryByTeam(teamId: string) {
   const firstDayOfWeek = dayjs().startOf('week').toDate()
   const lastDayOfWeek = dayjs().endOf('week').toDate()
 
-  // Subconsulta para metas criadas até o final da semana filtradas pelo time
   const goalsCreatedUpToWeek = db.$with('goals_created_up_to_week').as(
     db
       .select({
@@ -18,14 +17,10 @@ export async function getWeekSummaryByTeam(teamId: string) {
       })
       .from(goals)
       .where(
-        and(
-          eq(goals.teamsId, teamId), // Filtra pelas metas do time
-          lte(goals.createdAt, lastDayOfWeek)
-        )
+        and(eq(goals.teamsId, teamId), lte(goals.createdAt, lastDayOfWeek))
       )
   )
 
-  // Subconsulta para metas completadas na semana filtradas pelo time
   const goalsCompletedInWeek = db.$with('goals_completed_in_week').as(
     db
       .select({
@@ -40,7 +35,7 @@ export async function getWeekSummaryByTeam(teamId: string) {
       .innerJoin(goals, eq(goals.id, goalCompletions.goalId))
       .where(
         and(
-          eq(goals.teamsId, teamId), // Filtra pelas metas do time
+          eq(goals.teamsId, teamId),
           gte(goalCompletions.createdAt, firstDayOfWeek),
           lte(goalCompletions.createdAt, lastDayOfWeek)
         )
@@ -48,7 +43,6 @@ export async function getWeekSummaryByTeam(teamId: string) {
       .orderBy(desc(goalCompletions.createdAt))
   )
 
-  // Subconsulta para agrupar metas completadas por dia da semana para o time
   const goalsCompletedByWeekDay = db.$with('goals_completed_by_week_day').as(
     db
       .select({

@@ -17,7 +17,7 @@ export const users = pgTable('users', {
 export const teams = pgTable('teams', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => createId()), // Gerador de ID
+    .$defaultFn(() => createId()),
   name: text('name').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
@@ -58,18 +58,18 @@ export const goals = pgTable('goals', {
     .primaryKey()
     .$defaultFn(() => createId()),
   title: text('title').notNull(),
-  type: text('type').notNull(), // Novo campo para o tipo de meta
+  type: text('type').notNull(),
   desiredWeeklyFrequency: integer('desired_frequency').notNull(),
   categoryId: text('category_id').references(() => categories.id),
-  ownersId: text('owners_id') // Novo campo que faz referência à tabela users
+  ownersId: text('owners_id')
     .references(() => users.id, {
-      onDelete: 'cascade', // Se o proprietário for excluído, a referência será removida
-      onUpdate: 'cascade', // Atualizações no ID do proprietário serão refletidas
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
     })
     .notNull(),
   teamsId: text('teams_id').references(() => teams.id, {
-    onDelete: 'set null', // Se o time for excluído, a referência será removida
-    onUpdate: 'cascade', // Atualizações no ID do time serão refletidas
+    onDelete: 'set null',
+    onUpdate: 'cascade',
   }),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
@@ -83,10 +83,10 @@ export const goalCompletions = pgTable('goal_completions', {
   goalId: text('goal_id')
     .references(() => goals.id)
     .notNull(),
-  userId: text('user_id') // Novo campo que faz referência ao usuário que completou a meta
+  userId: text('user_id')
     .references(() => users.id, {
-      onDelete: 'cascade', // Se o usuário for excluído, a referência será removida
-      onUpdate: 'cascade', // Atualizações no ID do usuário serão refletidas
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
     })
     .notNull(),
   createdAt: timestamp('created_at', { withTimezone: true })

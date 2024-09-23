@@ -7,12 +7,11 @@ interface CreateTeamRequest {
 }
 
 export async function createTeam({ name, ownerId }: CreateTeamRequest) {
-  // Primeiro, cria o time
   const createdTeam = await db
     .insert(teams)
     .values({
       name: name,
-      createdAt: new Date(), // Insere a data de criação
+      createdAt: new Date(),
     })
     .returning({
       id: teams.id,
@@ -22,7 +21,6 @@ export async function createTeam({ name, ownerId }: CreateTeamRequest) {
 
   const teamId = createdTeam[0].id
 
-  // Em seguida, adiciona o owner do time
   await db
     .insert(teamOwners)
     .values({

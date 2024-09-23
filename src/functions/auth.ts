@@ -31,15 +31,13 @@ export async function createToken({ access_token }: CreateTokenRequest) {
 
   const userInfo = userInfoSchema.parse(userData)
 
-  // Verifica se o usuário já existe no banco de dados
   let user = await db
     .select()
     .from(users)
-    .where(eq(users.googleId, userInfo.id)) // Usa a função eq para comparação
+    .where(eq(users.googleId, userInfo.id))
     .execute()
-    .then(rows => rows[0]) // Pega o primeiro usuário, se existir
+    .then(rows => rows[0])
 
-  // Se o usuário não existir, cria um novo
   if (!user) {
     const response = await db
       .insert(users)
@@ -48,7 +46,7 @@ export async function createToken({ access_token }: CreateTokenRequest) {
         name: userInfo.name,
         email: userInfo.email,
         avatarUrl: userInfo.picture,
-        createdAt: new Date(), // Data atual
+        createdAt: new Date(),
       })
       .returning({ id: users.id })
       .execute()
@@ -59,7 +57,7 @@ export async function createToken({ access_token }: CreateTokenRequest) {
       name: userInfo.name,
       email: userInfo.email,
       avatarUrl: userInfo.picture,
-      createdAt: new Date(), // Data atual
+      createdAt: new Date(),
     }
   }
 

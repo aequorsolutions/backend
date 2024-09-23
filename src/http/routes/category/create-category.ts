@@ -17,7 +17,6 @@ export const createCategoryRoute: FastifyPluginAsyncZod = async app => {
     async request => {
       const { name } = request.body
       const userId = request.user.sub
-      // console.warn(id)
       const response = await createCategory(name, userId)
 
       return { categoryId: response }
