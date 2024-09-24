@@ -21,6 +21,7 @@ import { createTokenRoute } from './routes/auth'
 import { getMonthPendingGoalsRoute } from './routes/get-month-pending-goals'
 import { getMonthSummaryRoute } from './routes/get-month-summary'
 import { createCategoryRoute } from './routes/category/create-category'
+import { deleteCompletionRoute } from './routes/delete-completion'
 
 async function bootstrap() {
   const app = fastify().withTypeProvider<ZodTypeProvider>()
@@ -45,6 +46,7 @@ async function bootstrap() {
 
   app.register(createGoalRoute)
   app.register(createCompletionRoute)
+  app.register(deleteCompletionRoute)
 
   app.register(getWeekPendingGoalsRoute)
   app.register(getWeekSummaryRoute)
